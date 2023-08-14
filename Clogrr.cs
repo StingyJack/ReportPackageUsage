@@ -1,11 +1,7 @@
 ﻿namespace ReportPackageUsage
 {
-    using System;
     using System.Collections.Concurrent;
-    using System.Collections.Generic;
     using System.Diagnostics;
-    using System.IO;
-    using System.Threading;
 
     /// <summary>
     ///     Console logger with optional file logging
@@ -24,25 +20,24 @@
         /// <summary>
         ///     Initializes a new instance of the <see cref="Clogrr" /> class.
         /// </summary>
-        public Clogrr()
-        {
-            _logFilePath = null;
-        }
+        public Clogrr() => _logFilePath = null;
 
         public Clogrr(string logFileName, string logFileFolder, CancellationToken cancellationToken)
         {
-             _ = logFileName ?? throw new ArgumentNullException(nameof(logFileName));
+            _ = logFileName ?? throw new ArgumentNullException(nameof(logFileName));
             _logFilePath = Path.Combine(logFileFolder, logFileName);
             Console.WriteLine($"Using log file path of '{_logFilePath}'");
             _fileBuffer = new ConcurrentQueue<string>();
             _cancellationToken = cancellationToken;
-            var flushThread = new Thread(FileWriter);
-            flushThread.IsBackground = false;
-            flushThread.Name = "Clogrr Flush Worker";
+            var flushThread = new Thread(FileWriter)
+            {
+                IsBackground = false,
+                Name = "Clogrr Flush Worker"
+            };
             flushThread.Start();
         }
 
-       
+
         /// <inheritdoc />
         public void Info(string message, string callingMethod = null)
         {
@@ -51,7 +46,7 @@
             Trace.TraceInformation(msg); // to the VS output debug window 
             if (string.IsNullOrWhiteSpace(_logFilePath) == false)
             {
-               // Debug.WriteLine($"CLOGRR - enqueuing message '{msg}'");
+                // Debug.WriteLine($"CLOGRR - enqueuing message '{msg}'");
                 _fileBuffer.Enqueue(msg);
             }
         }
@@ -62,11 +57,13 @@
             var msg = $"{DateTime.Now:hh:mm:ss.fff} - {nameof(Err)} - {callingMethod} - {message} - {ex}";
             Console.Error.WriteLine(msg); //to the console
             Trace.TraceError(msg); // to the VS output debug window 
-            if (string.IsNullOrWhiteSpace(_logFilePath) == false)
+            if (string.IsNullOrWhiteSpace(_logFilePath))
             {
-                Debug.WriteLine($"CLOGRR - enqueuing message '{msg}'");
-                _fileBuffer.Enqueue(msg);
+                return;
             }
+
+            Debug.WriteLine($"CLOGRR - enqueuing message '{msg}'");
+            _fileBuffer.Enqueue(msg);
         }
 
         private void FileWriter()

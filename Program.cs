@@ -18,8 +18,6 @@
             var loggingCancellationTokenSource = new CancellationTokenSource();
             Log = new Clogrr($"{nameof(ReportPackageUsage)}.{DateTime.Now:yyyy.MM.dd.HH.mm.ss}.log", Environment.CurrentDirectory, loggingCancellationTokenSource.Token);
 
-            List<string> repoFolders;
-            string searchCriteria;
             var folderPath = args[0].Trim();
             var overallTime = Stopwatch.StartNew();
 
@@ -31,8 +29,8 @@
 
             Log.Info($"Using local folder {folderPath} to search for usages");
 
-            repoFolders = Directory.GetDirectories(folderPath, "*.*", SearchOption.TopDirectoryOnly).ToList();
-            searchCriteria = $"namedFolder.{folderPath.Replace("\\", "_").Replace(":", string.Empty)}";
+            var repoFolders = Directory.GetDirectories(folderPath, "*.*", SearchOption.TopDirectoryOnly).ToList();
+            var searchCriteria = $"namedFolder.{folderPath.Replace("\\", "_").Replace(":", string.Empty)}";
 
             Log.Info("Gathering referenced dependencies");
             var usedPackages = new Dictionary<string, PackageInfo>(StringComparer.OrdinalIgnoreCase);

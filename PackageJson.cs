@@ -1,12 +1,10 @@
 ﻿namespace ReportPackageUsage
 {
-    using System;
-    using System.Collections.Generic;
     using Newtonsoft.Json.Linq;
 
     public class PackageJson
     {
-        public List<NpmDependency> AllDependencies { get; private set; } = new List<NpmDependency>();
+        public List<NpmDependency> AllDependencies { get; } = new();
 
         public PackageJson(string jsonContent)
         {
@@ -20,20 +18,20 @@
                     foreach (var leaf in dep.Children())
                     {
                         var jp = leaf as JProperty;
-                        if (jp == null ) {continue;}
-                        
-                        var npmd = new NpmDependency();
-                        npmd.Name = jp.Name;
-                        npmd.Versions = jp.Value.ToString();
+                        if (jp == null)
+                        {
+                            continue;
+                        }
+
+                        var npmd = new NpmDependency
+                        {
+                            Name = jp.Name,
+                            Versions = jp.Value.ToString()
+                        };
                         AllDependencies.Add(npmd);
                     }
                 }
             }
-
         }
-
-
     }
-
-
 }

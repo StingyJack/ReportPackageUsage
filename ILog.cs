@@ -1,6 +1,5 @@
 ﻿namespace ReportPackageUsage
 {
-    using System;
     using System.Runtime.CompilerServices;
 
     /// <summary>
