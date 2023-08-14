@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ReportPackageUsage": {
+      "commandName": "Project",
+      "commandLineArgs": "\"D:\\projects.work\""
+    }
+  }
+}
